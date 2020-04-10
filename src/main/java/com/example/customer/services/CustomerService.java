@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -32,35 +34,39 @@ public class CustomerService {
         return customerRepository.getByID(id);
     }
 
-    //TODO Работает для Adress и одного PaidType
     public Customer addNewCustomer(Customer customer){
         Adress adress = adressRepository.getByCity(customer.getAdress().getCity());
         if (adress != null){
             customer.setAdress(adress);
         }
+        Set<PaidType> ptSet = new HashSet<>();
         for (PaidType p : customer.getPaidTypeSet()){
             PaidType paidType = paidTypeRepository.getByName(p.getName());
             if (paidType != null){
-                customer.getPaidTypeSet().remove(p);
-                customer.getPaidTypeSet().add(paidType);
+                ptSet.add(paidType);
+            } else {
+                ptSet.add(p);
             }
         }
+        customer.setPaidTypeSet(ptSet);
         return customerRepository.add(customer);
     }
 
-    //TODO Работает для Adress и одного PaidType
     public Customer updateCustomer(int id, Customer customer){
         Adress adress = adressRepository.getByCity(customer.getAdress().getCity());
         if (adress != null){
             customer.setAdress(adress);
         }
+        Set<PaidType> ptSet = new HashSet<>();
         for (PaidType p : customer.getPaidTypeSet()){
             PaidType paidType = paidTypeRepository.getByName(p.getName());
             if (paidType != null){
-                customer.getPaidTypeSet().remove(p);
-                customer.getPaidTypeSet().add(paidType);
+                ptSet.add(paidType);
+            } else {
+                ptSet.add(p);
             }
         }
+        customer.setPaidTypeSet(ptSet);
         return customerRepository.update(id, customer);
     }
 
