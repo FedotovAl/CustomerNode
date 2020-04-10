@@ -42,8 +42,8 @@ public class CustomerRepository {
             originalCustomer.setEmail(customer.getEmail());
             originalCustomer.setPassword(customer.getPassword());
             originalCustomer.setPhoneNumber(customer.getPhoneNumber());
-//            originalCustomer.setAdress(customer.getAdress());
-//            originalCustomer.setPaidTypeSet(customer.getPaidTypeSet());
+            originalCustomer.setAdress(customer.getAdress());
+            originalCustomer.setPaidTypeSet(customer.getPaidTypeSet());
 
             entityManager.merge(originalCustomer);
         }
