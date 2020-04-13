@@ -1,5 +1,6 @@
 package com.example.customer.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -34,7 +35,7 @@ public class Customer {
     private String phoneNumber;
 
     //address
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "adressid")
     private Adress adress;
 

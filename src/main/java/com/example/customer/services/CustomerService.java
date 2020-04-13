@@ -44,8 +44,6 @@ public class CustomerService {
             PaidType paidType = paidTypeRepository.getByName(p.getName());
             if (paidType != null){
                 ptSet.add(paidType);
-            } else {
-                ptSet.add(p);
             }
         }
         customer.setPaidTypeSet(ptSet);
@@ -54,16 +52,19 @@ public class CustomerService {
 
     public Customer updateCustomer(int id, Customer customer){
         Adress adress = adressRepository.getByCity(customer.getAdress().getCity());
-        if (adress != null){
+        Customer originalCustomer = customerRepository.getByID(id);
+        originalCustomer.getAdress().getCustomerSetA().remove(originalCustomer);
+        adressRepository.remove(originalCustomer.getAdress().getId());
+        originalCustomer.setAdress(null);
+        if (adress != null) {
             customer.setAdress(adress);
         }
+
         Set<PaidType> ptSet = new HashSet<>();
         for (PaidType p : customer.getPaidTypeSet()){
             PaidType paidType = paidTypeRepository.getByName(p.getName());
             if (paidType != null){
                 ptSet.add(paidType);
-            } else {
-                ptSet.add(p);
             }
         }
         customer.setPaidTypeSet(ptSet);
@@ -71,6 +72,8 @@ public class CustomerService {
     }
 
     public void remove(int id){
+        Customer customer = customerRepository.getByID(id);
         customerRepository.remove(id);
+        adressRepository.remove(customer.getAdress().getId());
     }
 }
