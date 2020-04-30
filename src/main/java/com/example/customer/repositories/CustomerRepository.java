@@ -26,14 +26,11 @@ public class CustomerRepository {
         return entityManager.find(Customer.class, id);
     }
 
-
-    //TODO
     public Customer add(Customer customer){
         entityManager.persist(customer);
         return customer;
     }
 
-    //TODO
     public Customer update(int id, Customer customer){
         Customer originalCustomer = entityManager.find(Customer.class, id);
         if (originalCustomer != null){

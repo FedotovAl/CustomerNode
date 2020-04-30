@@ -34,11 +34,17 @@ public class CustomerService {
         return customerRepository.getByID(id);
     }
 
+    public Set<PaidType> getAllPaidTypeByCustomerID(int id){
+        Customer customer = customerRepository.getByID(id);
+        return customer.getPaidTypeSet();
+    }
+
     public Customer addNewCustomer(Customer customer){
         Adress adress = adressRepository.getByCity(customer.getAdress().getCity());
         if (adress != null){
             customer.setAdress(adress);
         }
+
         Set<PaidType> ptSet = new HashSet<>();
         for (PaidType p : customer.getPaidTypeSet()){
             PaidType paidType = paidTypeRepository.getByName(p.getName());
@@ -47,6 +53,7 @@ public class CustomerService {
             }
         }
         customer.setPaidTypeSet(ptSet);
+
         return customerRepository.add(customer);
     }
 
@@ -68,6 +75,7 @@ public class CustomerService {
             }
         }
         customer.setPaidTypeSet(ptSet);
+
         return customerRepository.update(id, customer);
     }
 

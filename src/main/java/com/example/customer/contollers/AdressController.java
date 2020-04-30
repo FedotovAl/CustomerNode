@@ -5,7 +5,9 @@ import com.example.customer.services.AdressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -17,32 +19,39 @@ public class AdressController {
     private AdressService adressService;
 
     @GetMapping("/adresses")
-    public List<Adress> getAllAdresses(){
-        return adressService.getAllAdresses();
+    public ResponseEntity<List<Adress>> getAllAdresses() {
+        return new ResponseEntity<>(adressService.getAllAdresses(), HttpStatus.OK);
     }
 
     @GetMapping("/adresses/{adressId}")
-    public Adress getAdressByID(@PathVariable("adressId") int id){
-        return adressService.getAdressByID(id);
+    public ResponseEntity<Adress> getAdressByID(@PathVariable("adressId") int id) {
+        if (adressService.getAdressByID(id) == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(adressService.getAdressByID(id), HttpStatus.OK);
     }
 
     @PostMapping("/adresses")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Adress addAdress(@RequestBody Adress adress){
-
-        return adressService.addNewAdress(adress);
+    public ResponseEntity<Adress> addAdress(@RequestBody Adress adress) {
+        return new ResponseEntity<>(adressService.addNewAdress(adress), HttpStatus.CREATED);
     }
 
     @PutMapping("/adresses/{adressId}")
-    public Adress updateAdress(@PathVariable("adressId") int id,
-                               @RequestBody Adress adress){
-        return adressService.updateAdress(id, adress);
+    public ResponseEntity<Adress> updateAdress(@PathVariable("adressId") int id,
+                               @RequestBody Adress adress) {
+        if (adressService.getAdressByID(id) == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(adressService.updateAdress(id, adress), HttpStatus.OK);
     }
 
     @DeleteMapping("/adresses/{adressId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAdress(@PathVariable("adressId") int id){
+    public ResponseEntity<?> deleteAdress(@PathVariable("adressId") int id) {
+        if (adressService.getAdressByID(id) == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         adressService.remove(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

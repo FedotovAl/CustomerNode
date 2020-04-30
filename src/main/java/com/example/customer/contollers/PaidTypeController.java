@@ -5,6 +5,7 @@ import com.example.customer.services.PaidTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,29 +18,38 @@ public class PaidTypeController {
     private PaidTypeService paidTypeService;
 
     @GetMapping("/paidtypes")
-    public List<PaidType> getAllCustomers(){
-        return paidTypeService.getAllPaidTypes();
+    public ResponseEntity<List<PaidType>> getAllCustomers(){
+        return new ResponseEntity<>(paidTypeService.getAllPaidTypes(), HttpStatus.OK);
     }
 
     @GetMapping("/paidtypes/{paidtypesId}")
-    public PaidType getCustomerByID(@PathVariable("paidtypesId") int id){
-        return paidTypeService.getPaidTypeByID(id);
+    public ResponseEntity<PaidType> getCustomerByID(@PathVariable("paidtypesId") int id){
+        if (paidTypeService.getPaidTypeByID(id) == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(paidTypeService.getPaidTypeByID(id), HttpStatus.OK);
     }
+
     @PostMapping("/paidtypes")
-    @ResponseStatus(HttpStatus.CREATED)
-    public PaidType addPaidType(@RequestBody PaidType paidType){
-        return paidTypeService.addNewPaidType(paidType);
+    public ResponseEntity<PaidType> addPaidType(@RequestBody PaidType paidType){
+        return new ResponseEntity<>(paidTypeService.addNewPaidType(paidType), HttpStatus.CREATED);
     }
 
     @PutMapping("/paidtypes/{paidtypesId}")
-    public PaidType updatePaidType(@PathVariable("paidtypesId") int id,
+    public ResponseEntity<PaidType> updatePaidType(@PathVariable("paidtypesId") int id,
                                    @RequestBody PaidType paidType){
-        return paidTypeService.updatePaidType(id, paidType);
+        if (paidTypeService.getPaidTypeByID(id) == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(paidTypeService.updatePaidType(id, paidType), HttpStatus.OK);
     }
 
     @DeleteMapping("/paidtypes/{paidtypesId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletePaidType(@PathVariable("paidtypesId") int id){
+    public ResponseEntity<?> deletePaidType(@PathVariable("paidtypesId") int id){
+        if (paidTypeService.getPaidTypeByID(id) == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         paidTypeService.remove(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
