@@ -34,6 +34,11 @@ public class CustomerService {
         return customerRepository.getByID(id);
     }
 
+    //security
+    public Customer getCustomerByEmail(String email){
+        return customerRepository.getByEmail(email);
+    }
+
     public Set<PaidType> getAllPaidTypeByCustomerID(int id){
         Customer customer = customerRepository.getByID(id);
         return customer.getPaidTypeSet();

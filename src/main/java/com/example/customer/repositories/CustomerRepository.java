@@ -2,6 +2,8 @@ package com.example.customer.repositories;
 
 import com.example.customer.entities.Customer;
 import com.example.customer.entities.PaidType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,9 @@ public class CustomerRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
+
     public List<Customer> getAll(){
         return entityManager
                 .createQuery("from Customer", Customer.class)
@@ -27,6 +32,7 @@ public class CustomerRepository {
     }
 
     public Customer add(Customer customer){
+        customer.setPassword(bCryptPasswordEncoder.encode(customer.getPassword()));
         entityManager.persist(customer);
         return customer;
     }
@@ -37,7 +43,7 @@ public class CustomerRepository {
             originalCustomer.setFirstName(customer.getFirstName());
             originalCustomer.setLastName(customer.getLastName());
             originalCustomer.setEmail(customer.getEmail());
-            originalCustomer.setPassword(customer.getPassword());
+            originalCustomer.setPassword(bCryptPasswordEncoder.encode(customer.getPassword()));
             originalCustomer.setPhoneNumber(customer.getPhoneNumber());
             originalCustomer.setAdress(customer.getAdress());
             originalCustomer.setPaidTypeSet(customer.getPaidTypeSet());
@@ -54,6 +60,21 @@ public class CustomerRepository {
             for (PaidType p : originalCustomer.getPaidTypeSet()){
                 p.getCustomerSetP().remove(originalCustomer);
             }
+        }
+    }
+
+    //security
+    public Customer getByEmail(String paramName){
+        List<Customer> customerList = entityManager
+                .createQuery("from Customer where email = '"
+                                + paramName +
+                                "'",
+                        Customer.class
+                ).getResultList();
+        if (customerList.size() != 0){
+            return customerList.get(0);
+        } else {
+            return null;
         }
     }
 }
