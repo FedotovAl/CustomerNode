@@ -11,11 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/custserv/customers/auth", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -51,11 +47,11 @@ public class AuthenticationController {
 
     //получение customer по токену
     @GetMapping("token")
-    public ResponseEntity getId(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<Customer> getId(@RequestHeader("Authorization") String token) {
         token = token.replace("Bearer_", "");
         ResponseDto response = ResponseDto.findResponseDtoByToken(token);
         if (response == null) {
-            return new ResponseEntity(response, HttpStatus.NOT_FOUND);
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
         Customer customer = customerService.getCustomerByEmail(response.getEmail());
         return new ResponseEntity(customer, HttpStatus.OK);
